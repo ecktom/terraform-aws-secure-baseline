@@ -16,6 +16,11 @@ variable "s3_key_prefix" {
   default     = ""
 }
 
+variable "sns_publish_enabled" {
+  description = "The boolean flag whether this module publishes chandes to SNS or not."
+  default     = true
+}
+
 variable "sns_topic_name" {
   description = "The name of the SNS Topic to be used to notify configuration changes."
   default     = "ConfigChanges"

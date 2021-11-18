@@ -6,7 +6,7 @@ data "aws_region" "current" {}
 # --------------------------------------------------------------------------------------------------
 
 resource "aws_sns_topic" "config" {
-  count = var.enabled ? 1 : 0
+  count = var.enabled && var.sns_publish_enabled ? 1 : 0
 
   name = var.sns_topic_name
 
@@ -16,14 +16,14 @@ resource "aws_sns_topic" "config" {
 }
 
 resource "aws_sns_topic_policy" "config" {
-  count = var.enabled ? 1 : 0
+  count = var.enabled && var.sns_publish_enabled ? 1 : 0
   arn   = aws_sns_topic.config[0].arn
 
   policy = data.aws_iam_policy_document.config-sns-policy[0].json
 }
 
 data "aws_iam_policy_document" "config-sns-policy" {
-  count = var.enabled ? 1 : 0
+  count = var.enabled && var.sns_publish_enabled ? 1 : 0
 
   statement {
     actions   = ["sns:Publish"]
@@ -62,7 +62,7 @@ resource "aws_config_delivery_channel" "bucket" {
 
   s3_bucket_name = var.s3_bucket_name
   s3_key_prefix  = var.s3_key_prefix
-  sns_topic_arn  = aws_sns_topic.config[0].arn
+  sns_topic_arn  = var.sns_publish_enabled ? aws_sns_topic.config[0].arn : ""
 
   snapshot_delivery_properties {
     delivery_frequency = var.delivery_frequency
